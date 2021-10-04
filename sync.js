@@ -1,13 +1,26 @@
+// TODO: Add List of Files to sync
+// TODO: Add Ability to specify what file to sync
+// TODO: Add Ability to sync all files
+const scripts = ['skynet.js', ]
 export async function main(ns) {
-    var url = "https://raw.githubusercontent.com/MrFoxington/Bitburner/master/skynet.js?token=ABAE635NGYB7QN337ITRI33BLKBTQ";
-    var name = getNameFromUrl(url);
-    downloadFile(url, name);
+    ns.tprint("Starting Sync...");
+    const url = 'https://raw.githubusercontent.com/MrFoxington/Bitburner/master/';
+
+    if (ns.args.length == 0) {
+        ns.tprint('Sync requires at least 1 argument');
+        return;
+    }
+
+    if (ns.args[0] == 'all') {
+        await download(ns, url, scripts);
+    } else {
+        await download(ns, url, ns.args);
+    }
 }
 
-async function downloadFile(url, name) {
-    await ns.wget(url, name);
-}
-
-function getNameFromUrl(url) {
-    return url.substring(url.lastIndexOf('/') + 1, url.indexOf('?'));
+async function download(ns, url, names) {
+    names.forEach(name => {
+        await ns.wget(url + name, name);
+        ns.tprint("Sync Complete: " + name);
+    });
 }
